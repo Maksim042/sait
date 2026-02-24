@@ -1,55 +1,225 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Облачное приложение</title>
-    <style>
-        body { font-family: 'Inter', sans-serif; background: #f4f7f6; display: flex; flex-direction: column; align-items: center; padding: 20px; }
-        .container { width: 100%; max-width: 500px; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        
-        /* Стили блока авторизации */
-        .auth-bar { background: white; padding: 15px; border-radius: 12px; margin-bottom: 20px; display: flex; align-items: center; gap: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        .user-avatar { width: 40px; height: 40px; border-radius: 50%; border: 2px solid #007bff; }
-        
-        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
-        button { background: #007bff; color: white; border: none; padding: 12px; border-radius: 6px; width: 100%; font-weight: 600; cursor: pointer; transition: 0.3s; }
-        button:hover { background: #0056b3; }
-        button:disabled { background: #ccc; }
-        .logout-btn { background: #ff4757; padding: 8px 15px; width: auto; font-size: 14px; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Отправить заявку</title>
 
-        .post { background: #fff; border: 1px solid #eaeaea; padding: 15px; margin-top: 15px; border-radius: 8px; width: 100%; max-width: 500px; }
-        .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-        .post-avatar { width: 30px; height: 30px; border-radius: 50%; }
-        .like-btn { cursor: pointer; border: none; background: #f8f9fa; padding: 5px 12px; border-radius: 20px; margin-top: 10px; }
-        .time { font-size: 11px; color: #999; margin-left: auto; }
-    </style>
+  <style>
+    :root {
+      --primary: #14b8a6;
+      --primary-dark: #0d9488;
+      --light: #f8fffe;
+      --gray: #64748b;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+      margin: 0;
+      padding: 20px 20px 40px;
+      color: #1e293b;
+      min-height: 100vh;
+    }
+
+    .auth-bar {
+      background: white;
+      padding: 16px 20px;
+      border-radius: 16px;
+      box-shadow: 0 4px 16px rgba(20,184,166,0.1);
+      margin: 0 auto 24px;
+      max-width: 420px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+
+    .user-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--primary);
+    }
+
+    .user-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .user-name {
+      font-weight: 600;
+      color: #0f766e;
+    }
+
+    .user-email {
+      font-size: 0.9rem;
+      color: var(--gray);
+    }
+
+    .logout-btn {
+      background: #ef4444;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .form-container {
+      background: white;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 6px 24px rgba(20, 184, 166, 0.12);
+      width: 100%;
+      max-width: 420px;
+      border: 1px solid #d1f0e8;
+      margin: 0 auto 24px;
+      display: none;
+    }
+
+    .login-prompt {
+      text-align: center;
+      padding: 40px 20px;
+      background: white;
+      border-radius: 16px;
+      max-width: 420px;
+      margin: 0 auto 24px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    }
+
+    h3 { text-align: center; margin: 0 0 8px; color: #0f766e; font-size: 1.7rem; font-weight: 600; }
+    .subtitle { text-align: center; color: var(--gray); margin: 0 0 28px; font-size: 0.95rem; }
+
+    label { display: block; margin-bottom: 6px; color: #334155; font-weight: 500; font-size: 0.95rem; }
+    input {
+      width: 100%;
+      padding: 13px 15px;
+      margin-bottom: 18px;
+      border: 1px solid #bae6fd;
+      border-radius: 10px;
+      font-size: 1rem;
+      background: var(--light);
+    }
+    input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(20,184,166,0.15);
+    }
+    input[readonly] { background: #f1f5f9; color: #475569; }
+
+    button {
+      width: 100%;
+      padding: 13px;
+      background: var(--primary);
+      border: none;
+      color: white;
+      font-weight: 600;
+      font-size: 1rem;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+    button:hover:not(:disabled) {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+    button:disabled { background: #94a3b8; cursor: not-allowed; }
+
+    .counter { text-align: center; font-size: 1.1rem; color: #0f766e; margin: 16px 0; font-weight: 600; }
+
+    .feed { width: 100%; max-width: 420px; margin: 0 auto; }
+    .post {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 16px 18px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .post-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .name { font-weight: 600; color: #0f766e; font-size: 1.05rem; }
+    .time { font-size: 0.78rem; color: var(--gray); margin-left: auto; }
+    .email { color: #475569; font-size: 0.92rem; margin: 4px 0 12px; word-break: break-all; }
+
+    .like-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #f0fdfa;
+      color: #0f766e;
+      border: 1px solid #99f6e4;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+    .like-btn:hover { background: #ccfbf1; border-color: #5eead4; }
+
+    .footer-heart { text-align: center; margin-top: 32px; font-size: 1.6rem; color: var(--primary); opacity: 0.7; }
+  </style>
 </head>
 <body>
 
-    <div id="authSection" class="container" style="max-width: 500px; text-align: center;">
-        <button id="loginBtn">Войти через Google</button>
-        <div id="userInfo" style="display: none;" class="auth-bar">
-            <img id="userPhoto" class="user-avatar" src="" alt="Avatar">
-            <span id="userName" style="font-weight: bold;"></span>
-            <button id="logoutBtn" class="logout-btn">Выйти</button>
-        </div>
+  <!-- Блок авторизации -->
+  <div class="auth-bar">
+    <button id="loginBtn">Войти через Google</button>
+
+    <div id="userInfo" style="display:none; flex:1; display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+      <img id="userPhoto" class="user-avatar" src="" alt="" style="display:none;">
+      <div class="user-info">
+        <div class="user-name" id="userName"></div>
+        <div class="user-email" id="userEmail"></div>
+      </div>
+      <button id="logoutBtn" class="logout-btn">Выйти</button>
     </div>
+  </div>
 
-    <div id="messageForm" class="container" style="display: none;">
-        <h3>Создать запись</h3>
-        <input type="text" id="name" placeholder="Имя профиля" readonly>
-        <input type="email" id="email" placeholder="Ваш Email" readonly>
-        <input type="text" id="content" placeholder="Что у вас нового?">
-        <button id="mainBtn">Опубликовать в облако</button>
-    </div>
+  <!-- Форма (появляется после входа) -->
+  <div id="formContainer" class="form-container">
+    <h3>Отправить заявку</h3>
+    <div class="subtitle">Мы свяжемся с вами в ближайшее время 💙</div>
+    <form id="feedbackForm">
+      <label for="userName">Имя</label>
+      <input type="text" id="userName" readonly>
 
-    <div id="feed" style="width: 100%; max-width: 500px;"></div>
+      <label for="userEmail">Email</label>
+      <input type="email" id="userEmail" readonly>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, updateDoc, doc, increment } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+      <button type="submit" id="submitBtn">Отправить</button>
+    </form>
+  </div>
+
+  <div style="width:100%; max-width:420px; margin:0 auto 16px; display:none;" id="searchWrapper">
+    <input type="text" id="searchInput" class="search-input" placeholder="Поиск по имени...">
+  </div>
+
+  <div class="counter" id="counterBlock" style="display:none;">
+    Всего заявок: <span id="totalCount">—</span>
+  </div>
+
+  <div class="feed" id="feed"></div>
+
+  <div class="footer-heart">💙</div>
+
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+    import {
+      getFirestore, collection, addDoc, query, orderBy, onSnapshot,
+      doc, updateDoc, serverTimestamp, increment, getCountFromServer
+    } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+    import {
+      getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBGJvVV91pvYw4nzxAyvvnk8tVuMVHYIj8",
@@ -61,82 +231,161 @@
       measurementId: "G-LL6KD44CES"
     };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
-        const provider = new GoogleAuthProvider();
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
 
-        // --- ЛОГИКА АВТОРИЗАЦИИ ---
-        const loginBtn = document.getElementById('loginBtn');
-        const logoutBtn = document.getElementById('logoutBtn');
-        const userInfo = document.getElementById('userInfo');
-        const messageForm = document.getElementById('messageForm');
+    let allRequests = [];
 
-        loginBtn.onclick = () => signInWithPopup(auth, provider);
-        logoutBtn.onclick = () => signOut(auth);
+    // DOM элементы
+    const loginBtn      = document.getElementById('loginBtn');
+    const logoutBtn     = document.getElementById('logoutBtn');
+    const userInfo      = document.getElementById('userInfo');
+    const userPhoto     = document.getElementById('userPhoto');
+    const userNameEl    = document.getElementById('userName');
+    const userEmailEl   = document.getElementById('userEmail');
+    const formContainer = document.getElementById('formContainer');
+    const searchWrapper = document.getElementById('searchWrapper');
+    const counterBlock  = document.getElementById('counterBlock');
+    const nameInput     = document.getElementById('userName');
+    const emailInput    = document.getElementById('userEmail');
+    const submitBtn     = document.getElementById('submitBtn');
+    const form          = document.getElementById('feedbackForm');
 
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                loginBtn.style.display = 'none';
-                userInfo.style.display = 'flex';
-                messageForm.style.display = 'block';
-                document.getElementById('userName').innerText = user.displayName;
-                document.getElementById('userPhoto').src = user.photoURL;
-                document.getElementById('name').value = user.displayName;
-                document.getElementById('email').value = user.email;
-            } else {
-                loginBtn.style.display = 'block';
-                userInfo.style.display = 'none';
-                messageForm.style.display = 'none';
-            }
+    // Авторизация
+    loginBtn.onclick = () => signInWithPopup(auth, provider).catch(console.error);
+    logoutBtn.onclick = () => signOut(auth).catch(console.error);
+
+    onAuthStateChanged(auth, user => {
+      if (user) {
+        loginBtn.style.display = 'none';
+        userInfo.style.display = 'flex';
+        formContainer.style.display = 'block';
+        searchWrapper.style.display = 'block';
+        counterBlock.style.display = 'block';
+
+        userPhoto.src = user.photoURL || 'https://via.placeholder.com/44';
+        userPhoto.style.display = user.photoURL ? 'block' : 'block';
+        userNameEl.textContent = user.displayName || 'Пользователь';
+        userEmailEl.textContent = user.email || '';
+
+        nameInput.value = user.displayName || '';
+        emailInput.value = user.email || '';
+      } else {
+        loginBtn.style.display = 'block';
+        userInfo.style.display = 'none';
+        formContainer.style.display = 'none';
+        searchWrapper.style.display = 'none';
+        counterBlock.style.display = 'none';
+      }
+    });
+
+    // Отправка формы
+    form.addEventListener("submit", async e => {
+      e.preventDefault();
+      if (!auth.currentUser) return alert("Сначала войдите в аккаунт");
+
+      const name = nameInput.value.trim();
+      const email = emailInput.value.trim();
+
+      if (!name || !email) return alert("Заполнены не все данные");
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Отправляем...";
+
+      try {
+        await addDoc(collection(db, "requests"), {
+          name,
+          name_lower: name.toLowerCase().trim(),
+          email,
+          photo: auth.currentUser.photoURL || null,
+          likes: 0,
+          timestamp: serverTimestamp(),
+          createdAt: new Date().toISOString(),
+          approved: false,
+          uid: auth.currentUser.uid   // полезно для будущих фильтров/правил
         });
+        alert("Спасибо! Заявка отправлена 💙");
+        form.reset();
+      } catch (err) {
+        console.error(err);
+        alert("Ошибка отправки. Проверьте правила Firestore.");
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Отправить";
+      }
+    });
 
-        // --- ЛОГИКА РАБОТЫ С ДАННЫМИ ---
-        window.processLike = async (id) => {
-            await updateDoc(doc(db, "requests", id), { likes: increment(1) });
-        };
+    // Лайк
+    window.addLike = async id => {
+      try {
+        await updateDoc(doc(db, "requests", id), { likes: increment(1) });
+      } catch (err) {
+        console.error("Лайк не удался", err);
+      }
+    };
 
-        document.getElementById('mainBtn').onclick = async () => {
-            const content = document.getElementById('content').value;
-            if (!content) return alert("Введите текст сообщения!");
+    // Счётчик
+    async function updateTotalCount() {
+      try {
+        const snap = await getCountFromServer(collection(db, "requests"));
+        document.getElementById("totalCount").textContent = snap.data().count;
+      } catch (e) {
+        document.getElementById("totalCount").textContent = "—";
+      }
+    }
 
-            try {
-                await addDoc(collection(db, "requests"), {
-                    name: auth.currentUser.displayName,
-                    email: auth.currentUser.email,
-                    photo: auth.currentUser.photoURL,
-                    text: content,
-                    likes: 0,
-                    timestamp: serverTimestamp()
-                });
-                document.getElementById('content').value = "";
-            } catch (e) {
-                alert("Ошибка безопасности! Проверьте правила (Rules) в Firebase.");
-            }
-        };
+    // Лента + поиск
+    const q = query(collection(db, "requests"), orderBy("timestamp", "desc"));
 
-        // --- REAL-TIME ОБНОВЛЕНИЕ ЛЕНТЫ ---
-        const q = query(collection(db, "requests"), orderBy("timestamp", "desc"));
-        onSnapshot(q, (snapshot) => {
-            const feed = document.getElementById('feed');
-            feed.innerHTML = "";
-            snapshot.forEach((doc) => {
-                const data = doc.data();
-                feed.innerHTML += `
-                    <div class="post">
-                        <div class="post-header">
-                            <img src="${data.photo || 'https://via.placeholder.com/30'}" class="post-avatar">
-                            <b>${data.name}</b>
-                            <span class="time">${data.timestamp?.toDate().toLocaleTimeString() || '...'}</span>
-                        </div>
-                        <p>${data.text || data.email}</p>
-                        <button class="like-btn" onclick="processLike('${doc.id}')">👍 ${data.likes || 0}</button>
-                    </div>
-                `;
-            });
-        });
-        
-        window.db = db; // Для тестов в консоли F12
-    </script>
+    onSnapshot(q, snapshot => {
+      allRequests = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      renderFeed();
+      updateTotalCount();
+    });
+
+    function renderFeed() {
+      const feed = document.getElementById("feed");
+      const term = document.getElementById("searchInput")?.value?.trim().toLowerCase() || "";
+
+      feed.innerHTML = "";
+
+      const filtered = allRequests.filter(item =>
+        !term || (item.name || "").toLowerCase().includes(term)
+      );
+
+      if (filtered.length === 0) {
+        feed.innerHTML = '<p style="text-align:center; color:var(--gray); padding:60px 0;">Ничего не найдено</p>';
+        return;
+      }
+
+      filtered.forEach(data => {
+        const time = data.timestamp
+          ? new Date(data.timestamp.toDate()).toLocaleString("ru-RU", {
+              day:"2-digit", month:"2-digit", year:"numeric", hour:"2-digit", minute:"2-digit"
+            })
+          : "…";
+
+        const post = document.createElement("div");
+        post.className = "post";
+        post.innerHTML = `
+          <div class="post-header">
+            <img src="${data.photo || 'https://via.placeholder.com/40'}" class="user-avatar" alt="">
+            <span class="name">${data.name || "—"}</span>
+            <span class="time">${time}</span>
+          </div>
+          <div class="email">${data.email || "—"}</div>
+          <button class="like-btn" onclick="addLike('${data.id}')">
+            💙 ${data.likes || 0}
+          </button>
+        `;
+        feed.appendChild(post);
+      });
+    }
+
+    document.getElementById("searchInput")?.addEventListener("input", renderFeed);
+    updateTotalCount();
+  </script>
 </body>
 </html>
