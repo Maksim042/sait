@@ -51,15 +51,15 @@
         import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, updateDoc, doc, increment } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyBGJvVV91pvYw4nzxAyvvnk8tVuMVHYIj8",
-  authDomain: "maxim42-42e00.firebaseapp.com",
-  projectId: "maxim42-42e00",
-  storageBucket: "maxim42-42e00.firebasestorage.app",
-  messagingSenderId: "358434279205",
-  appId: "1:358434279205:web:97a2f74378e319d83514cc",
-  measurementId: "G-LL6KD44CES"
-};
+    const firebaseConfig = {
+      apiKey: "AIzaSyBGJvVV91pvYw4nzxAyvvnk8tVuMVHYIj8",
+      authDomain: "maxim42-42e00.firebaseapp.com",
+      projectId: "maxim42-42e00",
+      storageBucket: "maxim42-42e00.firebasestorage.app",
+      messagingSenderId: "358434279205",
+      appId: "1:358434279205:web:97a2f74378e319d83514cc",
+      measurementId: "G-LL6KD44CES"
+    };
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
