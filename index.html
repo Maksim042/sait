@@ -1,836 +1,622 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Социальная сеть</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Монитор группы</title>
+    <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-    :root {
-      --bg: #0d0d0f;
-      --surface: #141416;
-      --surface-2: #1c1c20;
-      --surface-3: #242428;
-      --accent: #c8f135;
-      --accent-dim: rgba(200,241,53,0.12);
-      --accent-glow: rgba(200,241,53,0.25);
-      --text: #f0f0f0;
-      --text-sub: #7a7a82;
-      --text-muted: #444450;
-      --border: rgba(255,255,255,0.07);
-      --border-accent: rgba(200,241,53,0.3);
-      --red: #ff4d4d;
-      --shadow: 0 2px 20px rgba(0,0,0,0.5);
-      --shadow-lg: 0 12px 48px rgba(0,0,0,0.7);
-      --radius: 16px;
-      --radius-sm: 10px;
-      --radius-pill: 100px;
-    }
+        :root {
+            --bg: #f0f2f5;
+            --card: #ffffff;
+            --border: #e8eaed;
+            --text: #1a1d23;
+            --muted: #8b8fa8;
+            --accent: #4f46e5;
+            --accent-light: #eef2ff;
+        }
 
-    body {
-      font-family: 'DM Sans', sans-serif;
-      background: var(--bg);
-      min-height: 100vh;
-      color: var(--text);
-      background-image: 
-        radial-gradient(ellipse 60% 40% at 80% 10%, rgba(200,241,53,0.05) 0%, transparent 60%),
-        radial-gradient(ellipse 40% 30% at 10% 90%, rgba(200,241,53,0.03) 0%, transparent 50%);
-    }
+        body {
+            font-family: 'Onest', sans-serif;
+            background: var(--bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 16px;
+            min-height: 100vh;
+        }
 
-    /* ─── SCROLLBAR ─── */
-    ::-webkit-scrollbar { width: 4px; height: 4px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: var(--surface-3); border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+        /* ── LOGIN SCREEN ── */
+        #loginScreen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+            gap: 0;
+        }
 
-    /* ─── TOPBAR ─── */
-    .topbar {
-      position: sticky; top: 0; z-index: 100;
-      background: rgba(13,13,15,0.85);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--border);
-      padding: 0 28px;
-      display: flex; align-items: center; justify-content: space-between;
-      height: 60px;
-    }
-    .topbar-logo {
-      font-family: 'Syne', sans-serif;
-      font-weight: 800; font-size: 22px;
-      color: var(--accent);
-      letter-spacing: -1px;
-      text-transform: uppercase;
-    }
-    .topbar-logo span {
-      display: inline-block;
-      background: var(--accent);
-      color: var(--bg);
-      padding: 1px 6px;
-      border-radius: 5px;
-      margin-right: 2px;
-    }
-    .topbar-nav { display: flex; gap: 4px; }
-    .nav-btn {
-      background: none; border: none; color: var(--text-sub);
-      padding: 8px 16px; border-radius: var(--radius-pill);
-      font-family: 'Syne', sans-serif;
-      font-size: 13px; font-weight: 700; cursor: pointer;
-      transition: all 0.2s;
-      display: flex; align-items: center; gap: 7px;
-      letter-spacing: 0.3px;
-      text-transform: uppercase;
-    }
-    .nav-btn:hover { background: var(--surface-2); color: var(--text); }
-    .nav-btn.active {
-      background: var(--accent-dim);
-      color: var(--accent);
-      border: 1px solid var(--border-accent);
-    }
-    .nav-btn .badge {
-      background: var(--red); color: white; font-size: 10px; font-weight: 700;
-      border-radius: 10px; padding: 1px 6px; min-width: 18px; text-align: center;
-      font-family: 'DM Sans', sans-serif;
-    }
-    .topbar-user { display: flex; align-items: center; gap: 12px; }
-    .topbar-avatar {
-      width: 34px; height: 34px; border-radius: 50%; object-fit: cover;
-      border: 2px solid var(--surface-3);
-      transition: border-color 0.2s;
-    }
-    .topbar-avatar:hover { border-color: var(--accent); }
-    .topbar-name { font-size: 13px; font-weight: 500; color: var(--text-sub); }
-    .btn-logout {
-      background: none; border: 1px solid var(--border);
-      color: var(--text-muted);
-      padding: 6px 14px; border-radius: var(--radius-pill);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s;
-      text-transform: uppercase; letter-spacing: 0.5px;
-    }
-    .btn-logout:hover { border-color: var(--red); color: var(--red); background: rgba(255,77,77,0.08); }
+        .login-card {
+            background: var(--card);
+            border-radius: 24px;
+            padding: 48px 40px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06), 0 8px 32px rgba(0,0,0,0.08);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
 
-    /* ─── PAGES ─── */
-    .page { display: none; }
-    .page.active { display: block; }
+        .login-logo {
+            width: 56px;
+            height: 56px;
+            background: var(--accent);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            margin: 0 auto 24px;
+        }
 
-    /* ─── LOGIN ─── */
-    #loginPage {
-      min-height: 100vh; display: flex; align-items: center; justify-content: center;
-      background: var(--bg);
-      position: relative; overflow: hidden;
-    }
-    #loginPage::before {
-      content: '';
-      position: absolute; inset: 0;
-      background: 
-        radial-gradient(ellipse 80% 60% at 50% 50%, rgba(200,241,53,0.06) 0%, transparent 70%);
-      pointer-events: none;
-    }
-    #loginPage::after {
-      content: '';
-      position: absolute;
-      width: 600px; height: 600px;
-      border: 1px solid rgba(200,241,53,0.07);
-      border-radius: 50%;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      animation: pulseRing 4s ease-in-out infinite;
-    }
-    @keyframes pulseRing {
-      0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
-      50% { transform: translate(-50%, -50%) scale(1.08); opacity: 1; }
-    }
-    .login-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 24px; padding: 56px 48px; text-align: center;
-      box-shadow: var(--shadow-lg), 0 0 60px rgba(200,241,53,0.05);
-      max-width: 380px; width: 90%;
-      position: relative; z-index: 1;
-      animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
-    }
-    @keyframes slideUp {
-      from { opacity: 0; transform: translateY(30px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .login-logo {
-      font-family: 'Syne', sans-serif;
-      font-weight: 800; font-size: 40px;
-      color: var(--accent);
-      letter-spacing: -2px;
-      margin-bottom: 8px;
-      display: block;
-    }
-    .login-card h1 {
-      font-family: 'Syne', sans-serif;
-      font-size: 26px; font-weight: 700;
-      letter-spacing: -0.5px; margin-bottom: 10px;
-      color: var(--text);
-    }
-    .login-card p { color: var(--text-sub); font-size: 14px; margin-bottom: 36px; line-height: 1.6; }
-    .btn-google {
-      display: flex; align-items: center; justify-content: center; gap: 12px;
-      background: var(--accent); color: #0d0d0f; border: none; width: 100%; padding: 15px;
-      border-radius: var(--radius); font-family: 'Syne', sans-serif; font-size: 14px;
-      font-weight: 800; cursor: pointer; transition: all 0.2s;
-      text-transform: uppercase; letter-spacing: 0.5px;
-    }
-    .btn-google:hover {
-      background: #d9ff4d;
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(200,241,53,0.4);
-    }
-    .btn-google:active { transform: translateY(0); }
+        .login-card h1 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
 
-    /* ─── FEED ─── */
-    .feed-layout {
-      max-width: 580px; margin: 0 auto; padding: 28px 16px;
-    }
-    .create-post {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 20px;
-      box-shadow: var(--shadow); margin-bottom: 20px;
-      transition: border-color 0.2s;
-    }
-    .create-post:focus-within {
-      border-color: var(--border-accent);
-      box-shadow: var(--shadow), 0 0 0 1px var(--border-accent);
-    }
-    .create-post-top { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 14px; }
-    .create-avatar {
-      width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex-shrink: 0;
-      border: 2px solid var(--surface-3);
-    }
-    .create-input {
-      flex: 1; border: 1px solid var(--border);
-      background: var(--surface-2);
-      border-radius: var(--radius-sm);
-      padding: 12px 16px; font-family: 'DM Sans', sans-serif; font-size: 14px;
-      color: var(--text);
-      resize: none; outline: none; transition: all 0.2s; min-height: 48px;
-    }
-    .create-input::placeholder { color: var(--text-muted); }
-    .create-input:focus {
-      border-color: var(--border-accent);
-      background: var(--surface-3);
-      box-shadow: 0 0 0 3px var(--accent-dim);
-    }
-    .create-actions { display: flex; align-items: center; gap: 8px; }
-    .upload-btn-small {
-      background: var(--surface-2); border: 1px solid var(--border);
-      border-radius: var(--radius-sm); padding: 8px 14px;
-      font-size: 12px; cursor: pointer; color: var(--text-sub);
-      font-family: 'Syne', sans-serif;
-      font-weight: 700; transition: all 0.2s;
-      display: flex; align-items: center; gap: 5px;
-      text-transform: uppercase; letter-spacing: 0.3px;
-    }
-    .upload-btn-small:hover { background: var(--surface-3); color: var(--text); border-color: var(--text-muted); }
-    .upload-btn-small input { display: none; }
-    .btn-publish {
-      background: var(--accent); color: var(--bg);
-      border: none; border-radius: var(--radius-sm);
-      padding: 9px 20px; font-family: 'Syne', sans-serif; font-size: 12px;
-      font-weight: 800; cursor: pointer; margin-left: auto; transition: all 0.2s;
-      text-transform: uppercase; letter-spacing: 0.5px;
-    }
-    .btn-publish:hover { background: #d9ff4d; box-shadow: 0 4px 16px rgba(200,241,53,0.3); }
-    .btn-publish:disabled { background: var(--surface-3); color: var(--text-muted); cursor: not-allowed; box-shadow: none; }
-    #postPreview {
-      width: 100%; border-radius: var(--radius-sm); margin-top: 12px;
-      display: none; max-height: 220px; object-fit: cover;
-      border: 1px solid var(--border);
-    }
-    .progress-bar-wrap {
-      display: none; height: 3px; background: var(--surface-3);
-      border-radius: 4px; margin-top: 10px; overflow: hidden;
-    }
-    .progress-bar { height: 100%; background: var(--accent); width: 0%; transition: width 0.3s; }
+        .login-card p {
+            font-size: 14px;
+            color: var(--muted);
+            margin-bottom: 32px;
+            line-height: 1.5;
+        }
 
-    .post-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 20px;
-      box-shadow: var(--shadow); margin-bottom: 14px;
-      transition: border-color 0.25s, transform 0.2s;
-      animation: fadeInPost 0.4s ease both;
-    }
-    .post-card:hover {
-      border-color: rgba(255,255,255,0.12);
-      transform: translateY(-1px);
-    }
-    @keyframes fadeInPost {
-      from { opacity: 0; transform: translateY(12px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .post-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
-    .post-avatar { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid var(--surface-3); }
-    .post-meta { flex: 1; }
-    .post-author {
-      font-family: 'Syne', sans-serif;
-      font-weight: 700; font-size: 14px; color: var(--text);
-    }
-    .post-time { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
-    .post-body img {
-      width: 100%; border-radius: var(--radius-sm); margin-bottom: 12px;
-      border: 1px solid var(--border);
-    }
-    .post-body p {
-      font-size: 14px; line-height: 1.7; color: rgba(240,240,240,0.85);
-      margin-bottom: 16px;
-    }
-    .post-footer { display: flex; gap: 8px; align-items: center; padding-top: 12px; border-top: 1px solid var(--border); }
-    .like-btn {
-      background: var(--surface-2); border: 1px solid var(--border);
-      border-radius: var(--radius-pill); padding: 6px 16px;
-      font-size: 13px; cursor: pointer; font-weight: 600;
-      color: var(--text-sub); font-family: 'DM Sans', sans-serif;
-      transition: all 0.2s;
-    }
-    .like-btn:hover { background: rgba(200,241,53,0.1); border-color: var(--border-accent); color: var(--accent); }
-    .msg-btn {
-      background: var(--surface-2); border: 1px solid var(--border);
-      border-radius: var(--radius-pill); padding: 6px 16px;
-      font-size: 13px; cursor: pointer; font-weight: 600; transition: all 0.2s;
-      color: var(--text-sub); font-family: 'DM Sans', sans-serif;
-      margin-left: auto;
-    }
-    .msg-btn:hover { background: var(--surface-3); border-color: var(--text-muted); color: var(--text); }
+        .btn-google {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 14px 20px;
+            background: var(--card);
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: 'Onest', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+            transition: all 0.15s;
+        }
 
-    /* ─── MESSENGER ─── */
-    .messenger-layout {
-      max-width: 900px; margin: 0 auto; padding: 24px 16px;
-      display: grid; grid-template-columns: 300px 1fr; gap: 16px; min-height: calc(100vh - 108px);
-    }
-    .contacts-panel {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius); box-shadow: var(--shadow);
-      overflow: hidden; display: flex; flex-direction: column;
-    }
-    .contacts-header {
-      padding: 18px 20px; border-bottom: 1px solid var(--border);
-      font-family: 'Syne', sans-serif;
-      font-weight: 800; font-size: 15px;
-      letter-spacing: -0.3px; text-transform: uppercase;
-      color: var(--text);
-    }
-    .contacts-search {
-      padding: 12px 16px; border-bottom: 1px solid var(--border);
-    }
-    .contacts-search input {
-      width: 100%; border: 1px solid var(--border);
-      background: var(--surface-2);
-      color: var(--text);
-      border-radius: var(--radius-sm);
-      padding: 9px 14px; font-family: 'DM Sans', sans-serif; font-size: 13px; outline: none;
-      transition: all 0.2s;
-    }
-    .contacts-search input::placeholder { color: var(--text-muted); }
-    .contacts-search input:focus { border-color: var(--border-accent); background: var(--surface-3); }
-    .contacts-list { flex: 1; overflow-y: auto; }
-    .contact-item {
-      display: flex; align-items: center; gap: 12px; padding: 13px 20px;
-      cursor: pointer; transition: all 0.15s; border-bottom: 1px solid rgba(255,255,255,0.04);
-    }
-    .contact-item:hover { background: var(--surface-2); }
-    .contact-item.active { background: var(--accent-dim); border-left: 2px solid var(--accent); }
-    .contact-avatar { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; flex-shrink: 0; border: 2px solid var(--surface-3); }
-    .contact-info { flex: 1; overflow: hidden; }
-    .contact-name {
-      font-family: 'Syne', sans-serif;
-      font-weight: 700; font-size: 13px;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-      color: var(--text);
-    }
-    .contact-last { font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
-    .contact-unread {
-      background: var(--accent); color: var(--bg); border-radius: 10px;
-      font-size: 10px; font-weight: 800; padding: 2px 7px;
-      min-width: 20px; text-align: center;
-      font-family: 'Syne', sans-serif;
-    }
-    .no-contacts { padding: 28px 20px; text-align: center; color: var(--text-muted); font-size: 13px; }
+        .btn-google:hover {
+            background: #fafafa;
+            border-color: #c5c8d6;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
 
-    .chat-panel {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius); box-shadow: var(--shadow);
-      display: flex; flex-direction: column; overflow: hidden;
-    }
-    .chat-empty {
-      flex: 1; display: flex; flex-direction: column; align-items: center;
-      justify-content: center; color: var(--text-muted); gap: 12px;
-    }
-    .chat-empty-icon { font-size: 48px; opacity: 0.4; }
-    .chat-empty-text {
-      font-family: 'Syne', sans-serif;
-      font-size: 14px; font-weight: 700;
-      text-transform: uppercase; letter-spacing: 1px;
-      color: var(--text-muted);
-    }
-    .chat-header {
-      padding: 16px 20px; border-bottom: 1px solid var(--border);
-      display: flex; align-items: center; gap: 12px;
-      background: var(--surface);
-    }
-    .chat-header-avatar { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid var(--surface-3); }
-    .chat-header-name {
-      font-family: 'Syne', sans-serif;
-      font-weight: 800; font-size: 15px;
-      color: var(--text);
-    }
-    .chat-messages {
-      flex: 1; overflow-y: auto; padding: 20px; display: flex;
-      flex-direction: column; gap: 8px;
-      background: linear-gradient(180deg, var(--bg) 0%, var(--surface) 100%);
-    }
-    .msg-bubble {
-      max-width: 68%; padding: 11px 16px; border-radius: 18px;
-      font-size: 14px; line-height: 1.55; word-break: break-word; position: relative;
-      font-family: 'DM Sans', sans-serif;
-    }
-    .msg-bubble.mine {
-      background: var(--accent); color: var(--bg);
-      align-self: flex-end; border-bottom-right-radius: 5px;
-      font-weight: 500;
-    }
-    .msg-bubble.theirs {
-      background: var(--surface-3); color: var(--text); align-self: flex-start;
-      border-bottom-left-radius: 5px;
-      border: 1px solid var(--border);
-    }
-    .msg-time { font-size: 10px; opacity: 0.55; margin-top: 5px; }
-    .msg-bubble.mine .msg-time { text-align: right; color: var(--bg); }
-    .msg-bubble.theirs .msg-time { color: var(--text-muted); }
-    .chat-input-area {
-      padding: 14px 16px; border-top: 1px solid var(--border);
-      display: flex; gap: 10px; align-items: flex-end;
-      background: var(--surface);
-    }
-    .chat-input {
-      flex: 1; border: 1px solid var(--border);
-      background: var(--surface-2); color: var(--text);
-      border-radius: var(--radius-sm);
-      padding: 11px 16px; font-family: 'DM Sans', sans-serif; font-size: 14px;
-      resize: none; outline: none; transition: all 0.2s; max-height: 120px; overflow-y: auto;
-      min-height: 44px;
-    }
-    .chat-input::placeholder { color: var(--text-muted); }
-    .chat-input:focus { border-color: var(--border-accent); background: var(--surface-3); }
-    .send-btn {
-      background: var(--accent); color: var(--bg);
-      border: none; border-radius: var(--radius-sm);
-      width: 44px; height: 44px; font-size: 16px; cursor: pointer;
-      transition: all 0.2s; flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 800;
-    }
-    .send-btn:hover { background: #d9ff4d; box-shadow: 0 4px 16px rgba(200,241,53,0.35); }
-    .send-btn:disabled { background: var(--surface-3); color: var(--text-muted); cursor: not-allowed; box-shadow: none; }
+        .btn-google svg { flex-shrink: 0; }
 
-    @media (max-width: 600px) {
-      .messenger-layout { grid-template-columns: 1fr; padding: 12px; }
-      .chat-panel { display: none; }
-      .chat-panel.open { display: flex; position: fixed; inset: 60px 0 0 0; z-index: 50; border-radius: 0; }
-      .contacts-panel { min-height: 60vh; }
-      .topbar-name { display: none; }
-      .topbar { padding: 0 16px; }
-    }
-  </style>
+        /* ── MAIN APP ── */
+        #appScreen { display: none; width: 100%; max-width: 460px; }
+
+        .card {
+            background: var(--card);
+            padding: 24px;
+            border-radius: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 4px 16px rgba(0,0,0,0.06);
+            width: 100%;
+            margin-bottom: 16px;
+        }
+
+        .card-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 16px;
+        }
+
+        /* Profile header */
+        .profile-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--accent-light);
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .avatar-placeholder {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .profile-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .profile-email {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        .btn-logout {
+            margin-left: auto;
+            padding: 6px 14px;
+            border: 1.5px solid var(--border);
+            background: transparent;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--muted);
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .btn-logout:hover { border-color: #f87171; color: #ef4444; }
+
+        /* Status buttons */
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .status-btn {
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: 'Onest', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .status-btn:hover { filter: brightness(0.94); transform: translateY(-1px); }
+        .status-btn:active { transform: translateY(0); }
+        .status-btn.active { outline: 2.5px solid currentColor; outline-offset: 2px; }
+
+        .btn-study  { background: #dcfce7; color: #16a34a; }
+        .btn-coffee { background: #fef9c3; color: #b45309; }
+        .btn-game   { background: #dbeafe; color: #1d4ed8; }
+        .btn-home   { background: #f3f4f6; color: #4b5563; }
+
+        /* Group list */
+        .user-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 0;
+            border-bottom: 1px solid var(--border);
+            animation: fadeIn 0.2s ease;
+        }
+
+        .user-item:last-child { border-bottom: none; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .user-name { font-size: 14px; font-weight: 600; color: var(--text); }
+        .user-status { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+        .user-avatar-sm {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: var(--accent-light);
+            flex-shrink: 0;
+        }
+
+        .user-avatar-sm-ph {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        #groupList { color: var(--muted); font-size: 14px; }
+
+        .refresh-hint {
+            font-size: 11px;
+            color: var(--muted);
+            text-align: center;
+            margin-top: 8px;
+            opacity: 0.7;
+        }
+
+        /* Error toast */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: #1a1d23;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 500;
+            transition: transform 0.3s;
+            z-index: 999;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+
+        /* ── CHAT ── */
+        .chat-messages {
+            display: flex; flex-direction: column; gap: 10px;
+            max-height: 320px; overflow-y: auto;
+            margin-bottom: 14px; padding-right: 4px;
+        }
+        .chat-messages::-webkit-scrollbar { width: 3px; }
+        .chat-messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+        .msg-row { display: flex; gap: 8px; align-items: flex-end; animation: fadeIn 0.2s ease; }
+        .msg-row.mine { flex-direction: row-reverse; }
+        .msg-ava { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+        .msg-ava-ph {
+            width: 28px; height: 28px; border-radius: 50%;
+            background: var(--accent); color: white; font-size: 11px; font-weight: 700;
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        .msg-content { max-width: 72%; display: flex; flex-direction: column; }
+        .msg-sender { font-size: 10px; font-weight: 700; color: var(--muted); margin-bottom: 3px; }
+        .msg-row.mine .msg-sender { text-align: right; }
+        .msg-bubble {
+            padding: 9px 14px; border-radius: 16px;
+            font-size: 13px; line-height: 1.5; word-break: break-word;
+        }
+        .msg-row.mine .msg-bubble {
+            background: var(--accent); color: white; border-bottom-right-radius: 4px;
+        }
+        .msg-row.theirs .msg-bubble {
+            background: #f3f4f6; color: var(--text); border-bottom-left-radius: 4px;
+        }
+        .msg-time { font-size: 10px; opacity: 0.55; margin-top: 4px; }
+        .msg-row.mine .msg-time { text-align: right; }
+        .chat-input-row { display: flex; gap: 8px; align-items: flex-end; }
+        .chat-input {
+            flex: 1; border: 1.5px solid var(--border); border-radius: 12px;
+            padding: 10px 14px; font-family: 'Onest', sans-serif; font-size: 13px;
+            color: var(--text); resize: none; outline: none; transition: border-color 0.15s;
+            min-height: 42px; max-height: 100px;
+        }
+        .chat-input:focus { border-color: var(--accent); }
+        .chat-input::placeholder { color: var(--muted); }
+        .send-btn {
+            width: 42px; height: 42px; border-radius: 12px;
+            background: var(--accent); border: none; color: white;
+            font-size: 16px; cursor: pointer; transition: all 0.15s;
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        .send-btn:hover { background: #4338ca; transform: translateY(-1px); }
+        .send-btn:disabled { background: var(--border); cursor: not-allowed; transform: none; }
+    </style>
 </head>
 <body>
 
-<!-- LOGIN PAGE -->
-<div id="loginPage">
-  <div class="login-card">
-    <span class="login-logo">SIGMA</span>
-    <h1>Привет!</h1>
-    <p>Войдите, чтобы общаться с друзьями и публиковать записи</p>
-    <button class="btn-google" id="loginBtn">
-      <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.29-8.16 2.29-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
-      Войти через Google
-    </button>
-  </div>
+<!-- LOGIN -->
+<div id="loginScreen">
+    <div class="login-card">
+        <div class="login-logo">👥</div>
+        <h1>Монитор группы</h1>
+        <p>Войдите через Google, чтобы видеть статусы одногруппников в реальном времени</p>
+        <button class="btn-google" onclick="signInWithGoogle()">
+            <svg width="18" height="18" viewBox="0 0 18 18"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z" fill="#34A853"/><path d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z" fill="#EA4335"/></svg>
+            Войти через Google
+        </button>
+    </div>
 </div>
 
-<!-- MAIN APP -->
-<div id="mainApp" style="display:none;">
-  <div class="topbar">
-    <div class="topbar-logo"><span>S</span>igma</div>
-    <div class="topbar-nav">
-      <button class="nav-btn active" id="navFeed" onclick="switchTab('feed')">🏠 Лента</button>
-      <button class="nav-btn" id="navMessages" onclick="switchTab('messages')">
-        💬 Сообщения <span class="badge" id="totalUnread" style="display:none">0</span>
-      </button>
+<!-- APP -->
+<div id="appScreen">
+    <div class="card">
+        <div class="card-label">Мой профиль</div>
+        <div class="profile-row">
+            <div id="myAvatar" class="avatar-placeholder">?</div>
+            <div>
+                <div id="myName" class="profile-name">Загрузка...</div>
+                <div id="myEmail" class="profile-email"></div>
+            </div>
+            <button class="btn-logout" onclick="signOut()">Выйти</button>
+        </div>
+        <div class="controls">
+            <button class="status-btn btn-study"  onclick="changeStatus(this, 'Учусь', '#22c55e')">📚 Учусь</button>
+            <button class="status-btn btn-coffee" onclick="changeStatus(this, 'Кофе-брейк', '#f59e0b')">☕ Кофе</button>
+            <button class="status-btn btn-game"   onclick="changeStatus(this, 'В игре', '#3b82f6')">🎮 В игре</button>
+            <button class="status-btn btn-home"   onclick="changeStatus(this, 'Дома', '#9ca3af')">🏠 Дома</button>
+        </div>
     </div>
-    <div class="topbar-user">
-      <img id="topbarAvatar" class="topbar-avatar" src="" alt="">
-      <span class="topbar-name" id="topbarName"></span>
-      <button class="btn-logout" id="logoutBtn">Выйти</button>
-    </div>
-  </div>
 
-  <!-- ЛЕНТА -->
-  <div id="feedTab" class="page active">
-    <div class="feed-layout">
-      <div class="create-post">
-        <div class="create-post-top">
-          <img id="myAvatar" class="create-avatar" src="" alt="">
-          <textarea class="create-input" id="postContent" placeholder="Что у вас нового?" rows="2"></textarea>
-        </div>
-        <img id="postPreview" alt="">
-        <div class="progress-bar-wrap" id="progressWrap"><div class="progress-bar" id="progressBar"></div></div>
-        <div class="create-actions">
-          <label class="upload-btn-small">
-            🖼️ Фото
-            <input type="file" id="imageInput" accept="image/*">
-          </label>
-          <button class="btn-publish" id="publishBtn">Опубликовать</button>
-        </div>
-      </div>
-      <div id="feedPosts"></div>
+    <div class="card">
+        <div class="card-label">Монитор группы</div>
+        <div id="groupList">Загрузка...</div>
+        <div class="refresh-hint">Обновляется каждые 5 сек</div>
     </div>
-  </div>
 
-  <!-- МЕССЕНДЖЕР -->
-  <div id="messagesTab" class="page">
-    <div class="messenger-layout">
-      <div class="contacts-panel">
-        <div class="contacts-header">💬 Сообщения</div>
-        <div class="contacts-search">
-          <input type="text" id="searchUsers" placeholder="Найти пользователя...">
+    <div class="card">
+        <div class="card-label">💬 Общий чат</div>
+        <div class="chat-messages" id="chatMessages"></div>
+        <div class="chat-input-row">
+            <textarea class="chat-input" id="chatInput" placeholder="Сообщение..." rows="1"></textarea>
+            <button class="send-btn" id="sendBtn">➤</button>
         </div>
-        <div class="contacts-list" id="contactsList"></div>
-      </div>
-      <div class="chat-panel" id="chatPanel">
-        <div class="chat-empty" id="chatEmpty">
-          <div class="chat-empty-icon">💬</div>
-          <div class="chat-empty-text">Выберите собеседника</div>
-        </div>
-        <div id="chatOpen" style="display:none; flex-direction:column; height:100%;">
-          <div class="chat-header">
-            <img id="chatAvatar" class="chat-header-avatar" src="" alt="">
-            <span id="chatName" class="chat-header-name"></span>
-          </div>
-          <div class="chat-messages" id="chatMessages"></div>
-          <div class="chat-input-area">
-            <textarea class="chat-input" id="msgInput" placeholder="Напишите сообщение..." rows="1"></textarea>
-            <button class="send-btn" id="sendMsgBtn">➤</button>
-          </div>
-        </div>
-      </div>
     </div>
-  </div>
-</div>
+
+<div class="toast" id="toast"></div>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-  import { getFirestore, query, orderBy, onSnapshot, serverTimestamp, updateDoc, doc, increment, addDoc, collection, setDoc, getDoc, where, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
-  import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
-  import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-storage.js";
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-const firebaseConfig = {
-  apiKey: "AIzaSyBGJvVV91pvYw4nzxAyvvnk8tVuMVHYIj8",
-  authDomain: "maxim42-42e00.firebaseapp.com",
-  projectId: "maxim42-42e00",
-  storageBucket: "maxim42-42e00.firebasestorage.app",
-  messagingSenderId: "358434279205",
-  appId: "1:358434279205:web:97a2f74378e319d83514cc",
-  measurementId: "G-LL6KD44CES"
-};
+    const SUPABASE_URL = 'https://omcdabtrzuyuurpefxbu.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_pmffNz1REHcDxvJ8ub2Qbg_tdwSMfaT';
+    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  const auth = getAuth(app);
-  const storage = getStorage(app);
-  const provider = new GoogleAuthProvider();
+    let currentUser = null;
+    let pollInterval = null;
 
-  let currentUser = null;
-  let activeChatId = null;
-  let activeChatUnsub = null;
-  let contactsUnsub = null;
-  let allUsers = [];
-  let unreadUnsubs = {};
-
-  // ─── AUTH ───
-  document.getElementById('loginBtn').onclick = () => signInWithPopup(auth, provider);
-  document.getElementById('logoutBtn').onclick = () => signOut(auth);
-
-  onAuthStateChanged(auth, async (user) => {
-    if (user) {
-      currentUser = user;
-      document.getElementById('loginPage').style.display = 'none';
-      document.getElementById('mainApp').style.display = 'block';
-      document.getElementById('topbarAvatar').src = user.photoURL;
-      document.getElementById('topbarName').textContent = user.displayName;
-      document.getElementById('myAvatar').src = user.photoURL;
-
-      await setDoc(doc(db, 'users', user.uid), {
-        uid: user.uid,
-        name: user.displayName,
-        photo: user.photoURL,
-        email: user.email,
-        lastSeen: serverTimestamp()
-      }, { merge: true });
-
-      initFeed();
-      loadAllUsers();
-      listenUnread();
-    } else {
-      currentUser = null;
-      document.getElementById('loginPage').style.display = 'flex';
-      document.getElementById('mainApp').style.display = 'none';
-      if (contactsUnsub) contactsUnsub();
-      Object.values(unreadUnsubs).forEach(u => u());
-    }
-  });
-
-  // ─── TAB SWITCH ───
-  window.switchTab = (tab) => {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById(tab + 'Tab').classList.add('active');
-    document.getElementById('nav' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
-    if (tab === 'messages') renderContacts();
-  };
-
-  // ─── FEED ───
-  let selectedFile = null;
-  
-  function initFeed() {
-    document.getElementById('imageInput').addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      if (file.size > 5 * 1024 * 1024) { alert("Максимум 5 МБ"); return; }
-      selectedFile = file;
-      const reader = new FileReader();
-      reader.onload = ev => {
-        const p = document.getElementById('postPreview');
-        p.src = ev.target.result; p.style.display = 'block';
-      };
-      reader.readAsDataURL(file);
-    });
-
-    document.getElementById('publishBtn').onclick = async () => {
-      const content = document.getElementById('postContent').value;
-      if (!content && !selectedFile) return alert("Введите текст или добавьте фото.");
-      const btn = document.getElementById('publishBtn');
-      btn.disabled = true; btn.textContent = 'Публикую...';
-      try {
-        let imageUrl = null;
-        if (selectedFile) imageUrl = await uploadImage(selectedFile);
-        await addDoc(collection(db, "requests"), {
-          name: currentUser.displayName, email: currentUser.email,
-          photo: currentUser.photoURL, uid: currentUser.uid,
-          text: content, imageUrl: imageUrl || null,
-          likes: 0, timestamp: serverTimestamp()
+    // ── AUTH ──────────────────────────────────────────
+    window.signInWithGoogle = async () => {
+        const { error } = await supabase.auth.signInWithOAuth({
+            provider: 'google',
+            options: {
+                redirectTo: window.location.origin + window.location.pathname,
+                queryParams: { prompt: 'select_account' }
+            }
         });
-        document.getElementById('postContent').value = '';
-        document.getElementById('postPreview').style.display = 'none';
-        document.getElementById('imageInput').value = '';
-        selectedFile = null;
-      } catch(e) { alert("Ошибка: " + e.message); }
-      btn.disabled = false; btn.textContent = 'Опубликовать';
+        if (error) showToast('Ошибка входа: ' + error.message);
     };
 
-    const q = query(collection(db, "requests"), orderBy("timestamp", "desc"));
-    onSnapshot(q, (snap) => {
-      const feed = document.getElementById('feedPosts');
-      feed.innerHTML = '';
-      snap.forEach(docSnap => {
-        const d = docSnap.data();
-        const isOther = d.uid && d.uid !== currentUser?.uid;
-        feed.innerHTML += `
-          <div class="post-card">
-            <div class="post-header">
-              <img src="${d.photo || 'https://via.placeholder.com/36'}" class="post-avatar">
-              <div class="post-meta">
-                <div class="post-author">${d.name}</div>
-                <div class="post-time">${d.timestamp?.toDate().toLocaleString('ru') || '...'}</div>
-              </div>
-            </div>
-            <div class="post-body">
-              ${d.imageUrl ? `<img src="${d.imageUrl}" alt="">` : ''}
-              ${d.text ? `<p>${d.text}</p>` : ''}
-            </div>
-            <div class="post-footer">
-              <button class="like-btn" onclick="processLike('${docSnap.id}')">👍 ${d.likes || 0}</button>
-              ${isOther ? `<button class="msg-btn" onclick="openChatWithUser('${d.uid}','${d.name}','${d.photo}')">✉️ Написать</button>` : ''}
-            </div>
-          </div>`;
-      });
-    });
-  }
+    window.signOut = async () => {
+        await supabase.auth.signOut();
+        window.location.href = window.location.pathname;
+    };
 
-  function uploadImage(file) {
-    return new Promise((resolve, reject) => {
-      const storageRef = ref(storage, `images/${Date.now()}_${file.name}`);
-      const task = uploadBytesResumable(storageRef, file);
-      document.getElementById('progressWrap').style.display = 'block';
-      task.on('state_changed',
-        snap => { document.getElementById('progressBar').style.width = Math.round(snap.bytesTransferred/snap.totalBytes*100) + '%'; },
-        reject,
-        async () => { document.getElementById('progressWrap').style.display = 'none'; resolve(await getDownloadURL(task.snapshot.ref)); }
-      );
-    });
-  }
+    // ── SESSION CHECK ─────────────────────────────────
+    async function init() {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+            await onLogin(session.user);
+        }
 
-  window.processLike = async (id) => {
-    await updateDoc(doc(db, "requests", id), { likes: increment(1) });
-  };
-
-  // ─── USERS ───
-  async function loadAllUsers() {
-    const snap = await getDocs(collection(db, 'users'));
-    allUsers = [];
-    snap.forEach(d => { if (d.id !== currentUser.uid) allUsers.push(d.data()); });
-    renderContacts();
-  }
-
-  document.getElementById('searchUsers').addEventListener('input', renderContacts);
-
-  function renderContacts() {
-    const q = document.getElementById('searchUsers').value.toLowerCase();
-    const filtered = q ? allUsers.filter(u => u.name.toLowerCase().includes(q)) : allUsers;
-    const list = document.getElementById('contactsList');
-    list.innerHTML = '';
-    if (!filtered.length) {
-      list.innerHTML = '<div class="no-contacts">Пользователи не найдены</div>';
-      return;
+        supabase.auth.onAuthStateChange(async (event, session) => {
+            if (event === 'SIGNED_IN' && session) {
+                await onLogin(session.user);
+            } else if (event === 'SIGNED_OUT') {
+                document.getElementById('appScreen').style.display = 'none';
+                document.getElementById('loginScreen').style.display = 'flex';
+            }
+        });
     }
-    filtered.forEach(user => {
-      const cid = getChatId(currentUser.uid, user.uid);
-      const div = document.createElement('div');
-      div.className = 'contact-item' + (activeChatId === cid ? ' active' : '');
-      div.dataset.chatId = cid;
-      div.onclick = () => openChat(user);
-      div.innerHTML = `
-        <img src="${user.photo || 'https://via.placeholder.com/40'}" class="contact-avatar">
-        <div class="contact-info">
-          <div class="contact-name">${user.name}</div>
-          <div class="contact-last" id="last_${cid}">...</div>
-        </div>
-        <span class="contact-unread" id="unread_${cid}" style="display:none">0</span>
-      `;
-      list.appendChild(div);
-      loadLastMessage(cid, user);
-    });
-  }
 
-  async function loadLastMessage(chatId, user) {
-    const q2 = query(collection(db, 'chats', chatId, 'messages'), orderBy('timestamp', 'desc'), limit(1));
-    onSnapshot(q2, snap => {
-      const el = document.getElementById('last_' + chatId);
-      if (el && !snap.empty) {
-        const d = snap.docs[0].data();
-        const preview = d.text.length > 30 ? d.text.substring(0, 30) + '...' : d.text;
-        el.textContent = (d.senderId === currentUser.uid ? 'Вы: ' : '') + preview;
-      } else if (el) {
-        el.textContent = 'Нет сообщений';
-      }
-    });
-  }
+    async function onLogin(user) {
+        currentUser = user;
 
-  // ─── UNREAD BADGES ───
-  function listenUnread() {
-    onSnapshot(collection(db, 'users', currentUser.uid, 'chatMeta'), snap => {
-      let total = 0;
-      snap.forEach(d => {
-        const data = d.data();
-        const unread = data.unread || 0;
-        total += unread;
-        const el = document.getElementById('unread_' + d.id);
-        if (el) { el.style.display = unread > 0 ? 'block' : 'none'; el.textContent = unread; }
-      });
-      const badge = document.getElementById('totalUnread');
-      badge.style.display = total > 0 ? 'inline' : 'none';
-      badge.textContent = total;
-    });
-  }
+        // Upsert profile
+        const username = user.user_metadata?.full_name
+            || user.user_metadata?.name
+            || user.email?.split('@')[0]
+            || 'Без имени';
 
-  // ─── CHAT ───
-  function getChatId(uid1, uid2) {
-    return [uid1, uid2].sort().join('_');
-  }
+        const avatar = user.user_metadata?.avatar_url || null;
 
-  window.openChatWithUser = async (uid, name, photo) => {
-    switchTab('messages');
-    const user = { uid, name, photo };
-    await openChat(user);
-  };
+        await supabase.from('profiles').upsert({
+            id: user.id,
+            username,
+            avatar_url: avatar,
+        }, { onConflict: 'id' });
 
-  async function openChat(user) {
-    if (activeChatUnsub) activeChatUnsub();
-    activeChatId = getChatId(currentUser.uid, user.uid);
+        // Show UI
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('appScreen').style.display = 'block';
 
-    document.querySelectorAll('.contact-item').forEach(el => {
-      el.classList.toggle('active', el.dataset.chatId === activeChatId);
-    });
+        // Update profile header
+        document.getElementById('myName').textContent = username;
+        document.getElementById('myEmail').textContent = user.email || '';
 
-    document.getElementById('chatEmpty').style.display = 'none';
-    const chatOpen = document.getElementById('chatOpen');
-    chatOpen.style.display = 'flex';
-    document.getElementById('chatAvatar').src = user.photo || 'https://via.placeholder.com/36';
-    document.getElementById('chatName').textContent = user.name;
-    document.getElementById('chatPanel').classList.add('open');
+        const avatarEl = document.getElementById('myAvatar');
+        if (avatar) {
+            avatarEl.outerHTML = `<img id="myAvatar" class="avatar" src="${avatar}" alt="avatar">`;
+        } else {
+            avatarEl.textContent = username[0].toUpperCase();
+        }
 
-    await setDoc(doc(db, 'users', currentUser.uid, 'chatMeta', activeChatId), { unread: 0 }, { merge: true });
-    const unreadEl = document.getElementById('unread_' + activeChatId);
-    if (unreadEl) { unreadEl.style.display = 'none'; }
+        fetchGroup();
+        pollInterval = setInterval(fetchGroup, 5000);
+        initChat();
+    }
 
-    const messagesQ = query(
-      collection(db, 'chats', activeChatId, 'messages'),
-      orderBy('timestamp', 'asc')
-    );
-    activeChatUnsub = onSnapshot(messagesQ, snap => {
-      const container = document.getElementById('chatMessages');
-      container.innerHTML = '';
-      snap.forEach(d => {
-        const data = d.data();
-        const mine = data.senderId === currentUser.uid;
-        const time = data.timestamp?.toDate().toLocaleTimeString('ru', {hour:'2-digit',minute:'2-digit'}) || '';
-        const bubble = document.createElement('div');
-        bubble.className = 'msg-bubble ' + (mine ? 'mine' : 'theirs');
-        bubble.innerHTML = `${data.text}<div class="msg-time">${time}</div>`;
-        container.appendChild(bubble);
-      });
-      container.scrollTop = container.scrollHeight;
-    });
+    // ── STATUS UPDATE ─────────────────────────────────
+    window.changeStatus = async (btn, text, color) => {
+        if (!currentUser) return;
 
-    document.getElementById('sendMsgBtn').onclick = () => sendMessage(user);
-    document.getElementById('msgInput').onkeydown = (e) => {
-      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(user); }
-    };
-  }
+        document.querySelectorAll('.status-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
 
-  async function sendMessage(toUser) {
-    const input = document.getElementById('msgInput');
-    const text = input.value.trim();
-    if (!text) return;
-    input.value = '';
+        const { error } = await supabase
+            .from('profiles')
+            .update({ status: text, color })
+            .eq('id', currentUser.id);
 
-    const chatId = activeChatId;
-    const msgData = {
-      text,
-      senderId: currentUser.uid,
-      senderName: currentUser.displayName,
-      timestamp: serverTimestamp()
+        if (error) showToast('Ошибка обновления статуса');
+        else fetchGroup();
     };
 
-    await addDoc(collection(db, 'chats', chatId, 'messages'), msgData);
+    // ── FETCH GROUP ───────────────────────────────────
+    async function fetchGroup() {
+        const { data, error } = await supabase
+            .from('profiles')
+            .select('*')
+            .order('username', { ascending: true });
 
-    await setDoc(
-      doc(db, 'users', toUser.uid, 'chatMeta', chatId),
-      { unread: increment(1), lastMsg: text, from: currentUser.uid },
-      { merge: true }
-    );
-  }
+        if (error) return console.error(error);
 
-  window.db = db;
+        const list = document.getElementById('groupList');
+
+        if (!data || data.length === 0) {
+            list.innerHTML = '<div style="color:#9ca3af;font-size:14px;padding:8px 0">Пока никого нет</div>';
+            return;
+        }
+
+        list.innerHTML = data.map(user => {
+            const isMe = currentUser && user.id === currentUser.id;
+            const initial = (user.username || '?')[0].toUpperCase();
+            const avatarHtml = user.avatar_url
+                ? `<img class="user-avatar-sm" src="${user.avatar_url}" alt="">`
+                : `<div class="user-avatar-sm-ph">${initial}</div>`;
+
+            return `
+                <div class="user-item">
+                    ${avatarHtml}
+                    <div style="flex-grow:1; min-width:0">
+                        <div class="user-name">${user.username || 'Неизвестный'}${isMe ? ' <span style="color:#a5b4fc;font-size:11px;font-weight:500">(вы)</span>' : ''}</div>
+                        <div class="user-status">${user.status || 'Статус не задан'}</div>
+                    </div>
+                    <div class="status-dot" style="background:${user.color || '#d1d5db'}"></div>
+                </div>`;
+        }).join('');
+    }
+
+    // ── TOAST ─────────────────────────────────────────
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    // ── CHAT ──────────────────────────────────────────
+    function initChat() {
+        // Realtime subscription
+        supabase
+            .channel('messages')
+            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
+                appendMessage(payload.new);
+            })
+            .subscribe();
+
+        // Load last 50 messages
+        loadMessages();
+
+        // Send on button click
+        document.getElementById('sendBtn').onclick = sendMessage;
+
+        // Send on Enter (Shift+Enter = newline)
+        document.getElementById('chatInput').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+    }
+
+    async function loadMessages() {
+        const { data, error } = await supabase
+            .from('messages')
+            .select('*')
+            .order('created_at', { ascending: true })
+            .limit(50);
+
+        if (error) return console.error(error);
+        const container = document.getElementById('chatMessages');
+        container.innerHTML = '';
+        data.forEach(msg => appendMessage(msg, false));
+        container.scrollTop = container.scrollHeight;
+    }
+
+    function appendMessage(msg, scroll = true) {
+        const container = document.getElementById('chatMessages');
+        const mine = currentUser && msg.user_id === currentUser.id;
+        const initial = (msg.username || '?')[0].toUpperCase();
+        const time = new Date(msg.created_at).toLocaleTimeString('ru', { hour: '2-digit', minute: '2-digit' });
+
+        const avatarHtml = msg.avatar_url
+            ? `<img class="msg-ava" src="${msg.avatar_url}" alt="">`
+            : `<div class="msg-ava-ph">${initial}</div>`;
+
+        const div = document.createElement('div');
+        div.className = 'msg-row ' + (mine ? 'mine' : 'theirs');
+        div.innerHTML = `
+            ${avatarHtml}
+            <div class="msg-content">
+                ${!mine ? `<div class="msg-sender">${msg.username}</div>` : ''}
+                <div class="msg-bubble">${msg.text.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>
+                <div class="msg-time">${time}</div>
+            </div>`;
+        container.appendChild(div);
+        if (scroll) container.scrollTop = container.scrollHeight;
+    }
+
+    async function sendMessage() {
+        if (!currentUser) return;
+        const input = document.getElementById('chatInput');
+        const text = input.value.trim();
+        if (!text) return;
+
+        const btn = document.getElementById('sendBtn');
+        btn.disabled = true;
+        input.value = '';
+
+        const username = currentUser.user_metadata?.full_name
+            || currentUser.user_metadata?.name
+            || currentUser.email?.split('@')[0]
+            || 'Без имени';
+
+        const { error } = await supabase.from('messages').insert({
+            user_id: currentUser.id,
+            username,
+            avatar_url: currentUser.user_metadata?.avatar_url || null,
+            text
+        });
+
+        if (error) showToast('Ошибка отправки сообщения');
+        btn.disabled = false;
+        input.focus();
+    }
+
+    init();
 </script>
 </body>
 </html>
